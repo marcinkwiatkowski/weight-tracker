@@ -5,18 +5,26 @@
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
             [ring.util.response :as ring]
-            [compojure.response :as response]))
+            [compojure.response :as response]
+            [taoensso.carmine :as redis]))
+
+(def pool (redis/make-conn-pool))
+(def spec-server1 (redis/make-conn-spec :host "127.0.0.1"
+                    :port 6379
+                    :timeout 4000))
+
+(defmacro wredis [& body] `(redis/with-conn pool spec-server1 ~@body))
 
 (defroutes main-routes
-  (GET "/" {session :session} (let [weights (session :weights )] (index-page weights)))
+  (GET "/" [] (let [weights (wredis (redis/get "weights"))] (index-page weights)))
   (POST "/save" {params :params session :session}
     (let [new-weight (:weight params)
-          weights (:weights session)
-          session (assoc session :weights (if (nil? weights) (vector new-weight) (conj weights new-weight)))]
-      (-> (ring/redirect "/")
-        (assoc :session session))
-      )
+          weights (wredis (redis/get "weights"))
+          new-weights (if (nil? weights) (vector new-weight) (conj weights new-weight))]
+      (wredis (redis/set "weights" new-weights))
+      (ring/redirect "/"))
     )
+  (GET "/redis" [] (wredis (redis/ping)))
   (route/resources "/")
   (route/not-found "Page not found"))
 
