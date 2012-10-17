@@ -25,6 +25,7 @@
       (ring/redirect "/"))
     )
   (GET "/redis" [] (wredis (redis/ping)))
+  (GET "/clear" [] (wredis (redis/set "weights" nil)))
   (route/resources "/")
   (route/not-found "Page not found"))
 
