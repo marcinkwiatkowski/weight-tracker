@@ -8,9 +8,10 @@
             [compojure.response :as response]
             [taoensso.carmine :as redis]))
 
+(def redis-url (java.net.URI. (System/getenv "REDISTOGO_URL")))
 (def pool (redis/make-conn-pool))
-(def spec-server1 (redis/make-conn-spec :host "127.0.0.1"
-                    :port 6379
+(def spec-server1 (redis/make-conn-spec :host (.getHost redis-url )
+                    :port (.getPort redis-url)
                     :timeout 4000))
 
 (defmacro wredis [& body] `(redis/with-conn pool spec-server1 ~@body))
