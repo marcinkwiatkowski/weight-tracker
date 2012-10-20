@@ -15,17 +15,23 @@
 
 (defmacro wredis [& body] `(redis/with-conn pool spec-server1 ~@body))
 
+(defn save-weight [weight]
+  (let [data (wredis (redis/get "data"))
+        new-entry {:date (.getTime (java.util.Date.)) :weight weight}
+        updated-data (if (nil? data) (vector new-entry) (conj data new-entry))]
+    (println "!!!!!!!" updated-data)
+    (wredis (redis/set "data" updated-data))))
+
 (defroutes main-routes
-  (GET "/" [] (let [weights (wredis (redis/get "weights"))] (index-page weights)))
+  (GET "/" [] (let [weights (wredis (redis/get "data"))] (index-page weights)))
   (POST "/save" {params :params session :session}
-    (let [new-weight (:weight params)
-          weights (wredis (redis/get "weights"))
-          new-weights (if (nil? weights) (vector new-weight) (conj weights new-weight))]
-      (wredis (redis/set "weights" new-weights))
-      (ring/redirect "/"))
+    (save-weight (:weight params))
+    (ring/redirect "/")
     )
   (GET "/redis" [] (wredis (redis/ping)))
-  (GET "/clear" [] (wredis (redis/set "weights" nil)))
+  (GET "/clear" []
+    (wredis (redis/set "data" nil))
+    (ring/redirect "/"))
   (route/resources "/")
   (route/not-found "Page not found"))
 

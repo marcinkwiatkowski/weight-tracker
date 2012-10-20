@@ -1,16 +1,14 @@
 var data = []
-
-$("li").each(function (index, e) {
+$("#weights li").each(function (index, e) {
     var value = $(e).text();
     data.push(parseInt(value))
 });
 
 var categories = []
-
-for (var i = 0; i < data.length; i++) {
-    categories[i] = i+1;
-}
-
+$("#dates li").each(function (index, e) {
+    var value = $(e).text();
+    categories.push(new Date(parseInt(value)).toDateString());
+});
 
 var chart;
 $(document).ready(function () {
