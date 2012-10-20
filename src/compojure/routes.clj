@@ -19,11 +19,21 @@
   (let [data (wredis (redis/get "data"))
         new-entry {:date (.getTime (java.util.Date.)) :weight weight}
         updated-data (if (nil? data) (vector new-entry) (conj data new-entry))]
-    (println "!!!!!!!" updated-data)
     (wredis (redis/set "data" updated-data))))
 
+(defn entered-today [last-date]
+  (let [date (java.util.Date. last-date)
+        today (java.util.Date.)]
+    (and
+      (= (.getYear date) (.getYear today))
+      (= (.getMonth date) (.getMonth today))
+      (= (.getDate date) (.getDate today))
+      )))
+
 (defroutes main-routes
-  (GET "/" [] (let [weights (wredis (redis/get "data"))] (index-page weights)))
+  (GET "/" []
+    (let [weights (wredis (redis/get "data"))]
+      (index-page weights (or (nil? weights) (not (entered-today (:date (last weights))))))))
   (POST "/save" {params :params session :session}
     (save-weight (:weight params))
     (ring/redirect "/")
