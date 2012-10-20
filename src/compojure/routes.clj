@@ -9,9 +9,11 @@
             [taoensso.carmine :as redis]))
 
 (def redis-url (java.net.URI. (System/getenv "REDISTOGO_URL")))
+(defn password [uri] (if (nil? (.getUserInfo uri)) nil (last (.split (.getUserInfo uri) ":"))))
 (def pool (redis/make-conn-pool))
-(def spec-server1 (redis/make-conn-spec :host (.getHost redis-url )
+(def spec-server1 (redis/make-conn-spec :host (.getHost redis-url)
                     :port (.getPort redis-url)
+                    :password (password redis-url )
                     :timeout 4000))
 
 (defmacro wredis [& body] `(redis/with-conn pool spec-server1 ~@body))
