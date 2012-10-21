@@ -26,9 +26,7 @@ $(document).ready(function () {
         xAxis:{
             categories:categories        },
         yAxis:{
-            title:{
-                text:'Weight (Kg)'
-            },
+            title: null,
             plotLines:[
                 {
                     value:0,
