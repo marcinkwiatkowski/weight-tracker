@@ -44,12 +44,7 @@ $(document).ready(function () {
             }
         },
         legend:{
-            layout:'vertical',
-            align:'right',
-            verticalAlign:'top',
-            x:-10,
-            y:100,
-            borderWidth:0
+            enabled: false
         },
         series:[
             {
