@@ -6,13 +6,16 @@
     [:head [:title "Weight Tracker"]
      (include-css "/css/bootstrap-responsive.min.css", "/css/bootstrap.min.css")]
     [:div {:class "container"}
+     [:div {:class "hero-unit"}
+      [:div {:class "row" :style "text-align: center;"}
+       (when show-input (form-to [:post "/save"]
+                          [:div {:class "input-append"}
+                           (text-field {:maxlength 4 :autofocus true :class "input-small" :placeholder "Today's weight"} "weight")
+                           [:span {:class "add-on"} "Kg"]]))]]
      [:div {:id "holder"}]
-     [:div (when show-input (form-to [:post "/save"]
-       (label "weight" "Today's weight")
-       (text-field {:maxlength 4 :autofocus true} "weight")))]
      ]
-     (ordered-list {:id "weights" :style "display: none"} (map :weight weights))
-     (ordered-list {:id "dates" :style "display: none"} (map :date weights))
+    (ordered-list {:id "weights" :style "display: none"} (map :weight weights))
+    (ordered-list {:id "dates" :style "display: none"} (map :date weights))
     [:script {:src "https://www.google.com/jsapi"}]
     [:script {:src "//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"}]
     (include-js "/javascript/highcharts.js", "/javascript/script.js")
