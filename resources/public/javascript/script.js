@@ -16,13 +16,11 @@ $(document).ready(function () {
         chart:{
             renderTo:'holder',
             type:'line',
-            marginRight:130,
-            marginBottom:25
+            marginRight: 0,
+            marginBottom: 50
         },
-        title:{
-            text:'Weight Tracker',
-            x:-20 //center
-        },
+        title: null,
+        subtitle: null,
         xAxis:{
             categories:categories        },
         yAxis:{
