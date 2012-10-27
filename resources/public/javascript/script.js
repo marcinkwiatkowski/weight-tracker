@@ -1,7 +1,7 @@
 var data = []
 $("#weights li").each(function (index, e) {
     var value = $(e).text();
-    data.push(parseInt(value))
+    data.push(parseFloat(value))
 });
 
 var categories = []
@@ -22,7 +22,8 @@ $(document).ready(function () {
         title: null,
         subtitle: null,
         xAxis:{
-            categories:categories        },
+            categories:categories
+        },
         yAxis:{
             title: null,
             plotLines:[
