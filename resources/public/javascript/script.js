@@ -7,7 +7,7 @@ $("#weights li").each(function (index, e) {
 var categories = []
 $("#dates li").each(function (index, e) {
     var value = $(e).text();
-    categories.push(new Date(parseInt(value)).toDateString());
+    categories.push(new Date(parseInt(value)));
 });
 
 var chart;
@@ -22,7 +22,12 @@ $(document).ready(function () {
         title: null,
         subtitle: null,
         xAxis:{
-            categories:categories
+            categories:categories,
+            labels: {
+                formatter: function() {
+                    return Highcharts.dateFormat('%d %b', this.value);
+                }
+            }
         },
         yAxis:{
             title: null,
@@ -37,7 +42,7 @@ $(document).ready(function () {
         tooltip:{
             formatter:function () {
                 return '<b>' + this.series.name + '</b><br/>' +
-                    this.x + ': ' + this.y + 'Kg';
+                    this.x.toDateString() + ': ' + this.y + 'Kg';
             }
         },
         legend:{
