@@ -6,14 +6,16 @@
             [compojure.handler :as handler]
             [ring.util.response :as ring]
             [compojure.response :as response]
-            [taoensso.carmine :as redis]))
+            [taoensso.carmine :as redis]
+            [clj-json.core :as json]
+            ))
 
 (def redis-url (java.net.URI. (System/getenv "REDISTOGO_URL")))
 (defn password [uri] (if (nil? (.getUserInfo uri)) nil (last (.split (.getUserInfo uri) ":"))))
 (def pool (redis/make-conn-pool))
 (def spec-server1 (redis/make-conn-spec :host (.getHost redis-url)
                     :port (.getPort redis-url)
-                    :password (password redis-url )
+                    :password (password redis-url)
                     :timeout 4000))
 
 (defmacro wredis [& body] `(redis/with-conn pool spec-server1 ~@body))
@@ -33,6 +35,11 @@
       (= (.getDate date) (.getDate today))
       )))
 
+(defn json-response [data & [status]]
+  {:status (or status 200)
+   :headers {"Content-Type" "application/json"}
+   :body (json/generate-string data)})
+
 (defroutes main-routes
   (GET "/" []
     (let [weights (wredis (redis/get "data"))]
@@ -45,6 +52,11 @@
   (GET "/clear" []
     (wredis (redis/set "data" nil))
     (ring/redirect "/"))
+  (GET "/today" []
+    (println "today")
+    (let [last-weight-entry (last (wredis (redis/get "data")))]
+      (json-response {"weight" (if (and (not (nil? last-weight-entry)) (entered-today (:date last-weight-entry))) (:weight last-weight-entry) nil)}))
+    )
   (route/resources "/")
   (route/not-found "Page not found"))
 
