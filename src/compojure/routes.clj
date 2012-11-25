@@ -48,12 +48,14 @@
     (save-weight (:weight params))
     (ring/redirect "/")
     )
+  (POST "/api/save" {params :params session :session}
+    (save-weight (:weight params))
+    )
   (GET "/redis" [] (wredis (redis/ping)))
   (GET "/clear" []
     (wredis (redis/set "data" nil))
     (ring/redirect "/"))
   (GET "/today" []
-    (println "today")
     (let [last-weight-entry (last (wredis (redis/get "data")))]
       (json-response {"weight" (if (and (not (nil? last-weight-entry)) (entered-today (:date last-weight-entry))) (:weight last-weight-entry) nil)}))
     )
