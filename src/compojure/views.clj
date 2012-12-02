@@ -6,8 +6,6 @@
     [:head [:title "Weight Tracker"]
      (include-css "/css/bootstrap-responsive.min.css", "/css/bootstrap.min.css")]
     [:div {:class "container"}
-     [:div {:class "hero-unit"}
-      [:div {:class "row" :style "text-align: center;"}]]
      [:div {:id "holder"}]
      ]
     [:script {:src "https://www.google.com/jsapi"}]
