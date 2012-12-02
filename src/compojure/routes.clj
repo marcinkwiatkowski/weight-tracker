@@ -51,6 +51,9 @@
   (POST "/api/save" {params :params session :session}
     (save-weight (:weight params))
     )
+  (GET "/api/index" []
+    (let [weights (wredis (redis/get "data"))]
+      (json-response weights)))
   (GET "/redis" [] (wredis (redis/ping)))
   (GET "/clear" []
     (wredis (redis/set "data" nil))
