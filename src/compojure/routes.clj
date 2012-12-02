@@ -43,7 +43,7 @@
 (defroutes main-routes
   (GET "/" []
     (let [weights (wredis (redis/get "data"))]
-      (index-page weights (or (nil? weights) (not (entered-today (:date (last weights))))))))
+      (index-page)))
   (POST "/save" {params :params session :session}
     (save-weight (:weight params))
     (ring/redirect "/")
